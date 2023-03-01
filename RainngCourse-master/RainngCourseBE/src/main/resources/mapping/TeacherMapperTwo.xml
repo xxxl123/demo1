@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper  3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--根据namespace来绑定对应的mapper接口-->
+<mapper namespace="com.rainng.coursesystem.teacher.mapper.TeacherMapperTwo">
+    <select id="findCoureByTeacher" resultType="com.rainng.coursesystem.teacher.bean.Course">
+
+        SELECT course_id,
+               course_name,
+               course_grade,
+               course_credit,
+               course_time,
+               course_location,
+               course_selected_count,
+               course_exam_date
+        from rc_course
+        where course_teacher_id = #{teacherNumber}
+    </select>
+
+    <!--根据tNumber查询id-->
+    <select id="findTidBytNumber" resultType="Integer">
+        select teacher_id from rc_teacher where teacher_number = #{tNumber}
+    </select>
+
+    <select id="getGradePageCount" resultType="com.rainng.coursesystem.teacher.bean.ov.Gradeov">
+        select stc.sc_id as sId,
+               c.course_name as cName,
+               st.student_name as stName,
+               stc.sc_daily_score as dScore,
+               stc.sc_exam_score as eScore,
+               stc.sc_score as score,
+               t.teacher_id as tId
+        from rc_student_course stc
+                 JOIN rc_student st on stc.sc_student_id = st.student_id
+                 JOIN rc_course c on stc.sc_course_id = c.course_id
+                 JOIN rc_teacher t on t.teacher_id = c.course_teacher_id
+        <where>
+            t.teacher_id = #{teacherId}
+            <if test="courseName != null and courseName != ''">
+                AND c.course_name LIKE CONCAT('%',#{courseName},'%')
+            </if>
+            <if test="studentName != null and studentName != ''">
+                AND st.student_name LIKE CONCAT('%',#{studentName},'%')
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getStGrade" resultType="com.rainng.coursesystem.teacher.bean.ov.Gradeov">
+
+        select stc.sc_daily_score as dScore,
+               stc.sc_exam_score as eScore,
+               stc.sc_score as score,
+               c.course_name as cName,
+               stc.sc_id as sId
+        from rc_student_course stc
+                 JOIN rc_course c on stc.sc_course_id = c.course_id
+        where stc.sc_id = #{cid}
+    </select>
+
+    <update id="updateGrade">
+        update rc_student_course set sc_daily_score = #{scDailyScore},sc_exam_score = #{scExameScore},sc_score = #{scScore} where sc_id = #{scId}
+    </update>
+
+    <!--根据tNumber查询id-->
+
+    <!--<select id="getStGrade" parameterType="com.example.demo.bean.UserInfo">
+
+
+    </update>-->
+
+    <!--<update id="updateUser" parameterType="com.example.demo.bean.UserInfo">
+
+    </update>-->
+
+
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rainng.coursesystem.dao.mapper.SCNStudentCourseMapper">
+    <select id="page" resultType="com.rainng.coursesystem.SCN.course.Bean.Response.Studentcourse_output">
+        SELECT sc_id AS 'id', course_name AS 'courseName', student_name AS 'studentName', class_name AS 'className',
+        sc_daily_score AS 'dailyScore', sc_exam_score AS 'examScore', sc_score AS 'score',student_number AS 'studentNumber'
+        FROM rc_student_course
+        JOIN rc_course on sc_course_id = course_id
+        JOIN rc_student on sc_student_id = student_id
+        JOIN rc_class on student_class_id = class_id
+        <where>
+            <if test="className != null and className != ''">
+                AND class_name LIKE CONCAT('%',#{className},'%')
+            </if>
+            <if test="courseName != null and courseName != ''">
+                AND course_name LIKE CONCAT('%',#{courseName},'%')
+            </if>
+            <if test="studentName != null and studentName != ''">
+                AND student_name LIKE CONCAT('%',#{studentName},'%')
+            </if>
+        </where>
+        ORDER  BY sc_score desc
+    </select>
+    <select id="findStudentCourse" resultType="com.rainng.coursesystem.SCN.course.Bean.Response.Studentcourse_output">
+        SELECT sc_id AS 'id', course_name AS 'courseName', student_name AS 'studentName', class_name AS 'className',
+                sc_daily_score AS 'dailyScore', sc_exam_score AS 'examScore', sc_score AS 'score'
+        FROM rc_student_course
+                 JOIN rc_course on sc_course_id = course_id
+                 JOIN rc_student on sc_student_id = student_id
+                 JOIN rc_class on student_class_id = class_id
+        where sc_id=#{id}
+    </select>
+    <update id="updStudentCourse">
+        update rc_student_course
+        set sc_daily_score=#{dailyScore},sc_exam_score=#{examScore},sc_score=#{score}
+        where sc_id=#{id}
+    </update>
+    <delete id="delStudentCourse">
+        delete from rc_student_course
+        where sc_id=#{id}
+    </delete>
+    <delete id="delCourse">
+        delete from rc_student_course
+        where sc_id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="findAdmin" resultType="java.lang.Integer">
+        select count(*) from rc_admin where admin_username=#{username} and admin_password=#{password}
+    </select>
+    <select id="list" resultType="com.rainng.coursesystem.SCN.course.Bean.Response.Export_output">
+        SELECT course_name AS 'courseName', student_name AS 'studentName', class_name AS 'className',
+            sc_daily_score AS 'dailyScore', sc_exam_score AS 'examScore', sc_score AS 'score',student_number AS 'studentNumber',
+            class_grade AS 'classGrade'
+        FROM rc_student_course
+        JOIN rc_course on sc_course_id = course_id
+        JOIN rc_student on sc_student_id = student_id
+        JOIN rc_class on student_class_id = class_id
+        ORDER BY student_number asc
+    </select>
+
+</mapper>

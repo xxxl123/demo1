@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rainng.coursesystem.dao.mapper.AssessMapper">
+    <select id="getCourse" resultType="com.rainng.coursesystem.SCN.course.Bean.Response.Assess_output">
+        SELECT DISTINCT sc_id AS 'id',teacher_name AS 'teacherName',course_name AS 'courseName'
+        FROM rc_student_course,rc_teacher,rc_student,rc_course
+        where sc_student_id= #{id} and sc_course_id=course_id and course_teacher_id=teacher_id and sc_score is NOT NULL
+    </select>
+    <update id="addAssess">
+        update rc_student_course set sc_ability=#{ability},sc_effect=#{effect},sc_content=#{content} where sc_id=#{id}
+    </update>
+</mapper>
